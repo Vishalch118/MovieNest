@@ -1,0 +1,14 @@
+To run this website in your system,
+
+First go to the Folder MovieNest and open the terminal and enter "npm run dev"
+this will give you the frontend part i.e., the website
+
+Check for mongod.exe file in here:
+C:\Program Files\MongoDB\Server\8.0\bin>
+   if it doesnt exit then create a folder named data in the local disk C and a file named db in it.
+   then come back to
+C:\Program Files\MongoDB\Server\8.0\bin>
+and open the command window then enter .\mongod.exe
+
+Then open an other terminal and go to the folder Backend and enter "npm run dev"
+this will initiate the connecton bw frontend backend and the MongoDB database
