@@ -11,7 +11,7 @@ function Signin() {
     e.preventDefault();
     setMessage("");
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signin", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -20,7 +20,6 @@ function Signin() {
       if (res.ok && data.token) {
         localStorage.setItem("token", data.token);
         setMessage("Sign in successful!");
-        // Redirect to home or dashboard
         navigate("/");
       } else {
         setMessage(data.msg || "Sign in failed");
