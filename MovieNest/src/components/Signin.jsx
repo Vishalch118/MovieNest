@@ -5,27 +5,38 @@ function Signin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    setIsLoading(true);
+    
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/signin`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/signin`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json" 
+        },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (res.ok && data.token) {
+      
+      const data = await response.json();
+      
+      if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
-        setMessage("Sign in successful!");
-        navigate("/");
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setMessage("Sign in successful! Redirecting...");
+        setTimeout(() => navigate("/"), 1000);
       } else {
         setMessage(data.msg || "Sign in failed");
       }
-    } catch (err) {
-      setMessage("Server error");
+    } catch (error) {
+      console.error("Signin error:", error);
+      setMessage("Network error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -41,6 +52,7 @@ function Signin() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isLoading}
           />
           <input
             type="password"
@@ -49,19 +61,23 @@ function Signin() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={isLoading}
           />
           <button
             type="submit"
-            className="w-full bg-blue-400 text-white p-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300"
+            className="w-full bg-blue-400 text-white p-3 rounded-lg font-semibold hover:bg-blue-500 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
         {message && (
-          <div className="mt-4 text-center text-red-500">{message}</div>
+          <div className={`mt-4 text-center ${message.includes('successful') ? 'text-green-500' : 'text-red-500'}`}>
+            {message}
+          </div>
         )}
         <p className="text-center mt-4 text-gray-600">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link to="/signup" className="text-blue-500 hover:underline">
             Sign Up
           </Link>
