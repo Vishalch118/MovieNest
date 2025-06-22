@@ -13,11 +13,14 @@ function Signup() {
     setMessage("");
     
     // Debug logging
-    console.log("API URL:", process.env.REACT_APP_API_URL);
-    console.log("Full URL:", `${process.env.REACT_APP_API_URL}/api/auth/signup`);
+    console.log("API URL from env:", process.env.REACT_APP_API_URL);
+    
+    // Using your actual backend URL
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://movienest-backend-x6ou.onrender.com';
+    console.log("Using API URL:", API_BASE_URL);
     
     try {
-      const url = `${process.env.REACT_APP_API_URL}/api/auth/signup`;
+      const url = `${API_BASE_URL}/api/auth/signup`;
       console.log("Making request to:", url);
       
       const res = await fetch(url, {
