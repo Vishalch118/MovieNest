@@ -11,22 +11,57 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+    
+    // Debug logging
+    console.log("API URL:", process.env.REACT_APP_API_URL);
+    console.log("Full URL:", `${process.env.REACT_APP_API_URL}/api/auth/signup`);
+    
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/signup`, {
+      const url = `${process.env.REACT_APP_API_URL}/api/auth/signup`;
+      console.log("Making request to:", url);
+      
+      const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ name, email, password }),
       });
-      const data = await res.json();
+      
+      console.log("Response status:", res.status);
+      console.log("Response ok:", res.ok);
+      console.log("Response headers:", res.headers);
+      
+      // Get the raw response text first
+      const responseText = await res.text();
+      console.log("Raw response text:", responseText);
+      
+      // Try to parse as JSON
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log("Parsed JSON data:", data);
+      } catch (parseError) {
+        console.error("JSON parse error:", parseError);
+        throw new Error(`Invalid JSON response: ${responseText}`);
+      }
+      
       if (res.ok && data.token) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        console.log("Token saved successfully");
         setMessage("Account created! Redirecting...");
         setTimeout(() => navigate("/"), 1000);
       } else {
-        setMessage(data.msg || "Sign up failed");
+        console.log("Signup failed:", data);
+        setMessage(data.msg || data.message || "Sign up failed");
       }
     } catch (err) {
-      setMessage("Server error");
+      console.error("Full error object:", err);
+      console.error("Error name:", err.name);
+      console.error("Error message:", err.message);
+      console.error("Error stack:", err.stack);
+      setMessage(`Error: ${err.message}`);
     }
   };
 
